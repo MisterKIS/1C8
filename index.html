@@ -15,18 +15,19 @@
 
       const response = await fetch(scriptUrl);
         const data = await response.json();  // Парсим JSON
-        const headers = data.values[0];
-        let index = headers.indexOf("Паритет");
-        const columnData = data.values.map(row => row[index]);
+       // const headers = data.values[0];
+        //let index = headers.indexOf("Паритет");
+        //const columnData = data.values.map(row => row[index]);
         console.log('Полные данные:', data);
         //console.log('Значения:', data.values);
+        const result = getColumn(data, ["Имя", "Возраст", "Зарплата"]);
         // Создаем таблицу
             let html = '<table>';
             
             // Добавляем заголовки (первая строка)
             
             html += '<tr>';
-            columnData.forEach(column => {
+            result.headers.forEach(column => {
                 html += `<th>${column}</th>`;
             });
             html += '</tr>';
@@ -34,10 +35,23 @@
             container.innerHTML = html;
 };
      
-      // Вызываем когда страница загрузится
-//window.addEventListener('DOMContentLoaded', () => {
-   // loadData();
-//})
+   function getColumn(data, name) {
+     const headers = data.values[0];
+    const rows = data.values.slice(1);
+
+      const columnIndices = columnNames.map(name => 
+        headers.indexOf(name)
+    ).filter(index => index !== -1); // Убираем не найденные
+
+     const filteredHeaders = headers.filter((_, index) => 
+        columnIndices.includes(index)
+    );
+     return {
+        headers: filteredHeaders,
+        rows: filteredRows,
+        fullData: [filteredHeaders, ...filteredRows]
+    };
+   }
     </script>
   </body>
 </html>
