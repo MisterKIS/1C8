@@ -4,10 +4,13 @@
     <base target="_top">
   </head>
   <body>
+    <!-- Кнопка для загрузки -->
+    <button onclick="loadData()">Загрузить данные</button>
     <div id="data"></div>
-    <div>тест</div>
     <script>
+      
       async function loadData() {
+        const container = document.getElementById('data');
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbxz8mczromb-Fa6Iq2jK9Ezm2tUYsDR2waJaUdelnturU0JNCTh4p4F_T1KPgKuvo9v/exec';
 
       const response = await fetch(scriptUrl);
@@ -15,15 +18,24 @@
         
         console.log('Полные данные:', data);
         //console.log('Значения:', data.values);
-      // Используем данные из первого запроса
-        document.getElementById('data').innerHTML = 
-            JSON.stringify(data.values, null, 2);
+        // Создаем таблицу
+            let html = '<table>';
+            
+            // Добавляем заголовки (первая строка)
+            const headers = data.values[0];
+            html += '<tr>';
+            headers.forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr>';
+        html += '</table>';
+            container.innerHTML = html;
 };
      
       // Вызываем когда страница загрузится
-window.addEventListener('DOMContentLoaded', () => {
-    loadData();
-})
+//window.addEventListener('DOMContentLoaded', () => {
+   // loadData();
+//})
     </script>
   </body>
 </html>
