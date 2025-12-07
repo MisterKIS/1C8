@@ -15,17 +15,15 @@
         
         console.log('Полные данные:', data);
         console.log('Значения:', data.values);
-      
-     // Получаем данные
-        fetch(scriptUrl)
-            .then(response => response.json())
-            .then(data => {
-                // data содержит то же самое, что и ваша ссылка
-                console.log(data);
-                document.getElementById('data').innerHTML = 
-                    JSON.stringify(data, null, 2);
-            });
-      }
+      // Используем данные из первого запроса
+        document.getElementById('data').innerHTML = 
+            JSON.stringify(data, null, 2);
+};
+     
+      // Вызываем когда страница загрузится
+window.addEventListener('DOMContentLoaded', () => {
+    loadData();
+})
     </script>
   </body>
 </html>
