@@ -35,11 +35,11 @@
             container.innerHTML = html;
 };
      
-   function getColumn(data, name) {
+   function getColumn(data, colname) {
      const headers = data.values[0];
     const rows = data.values.slice(1);
 
-      const columnIndices = columnNames.map(name => 
+      const columnIndices = colname.map(name => 
         headers.indexOf(name)
     ).filter(index => index !== -1); // Убираем не найденные
 
