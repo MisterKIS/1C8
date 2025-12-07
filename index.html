@@ -46,6 +46,10 @@
      const filteredHeaders = headers.filter((_, index) => 
         columnIndices.includes(index)
     );
+
+     const filteredRows = rows.map(row =>
+        columnIndices.map(index => row[index])
+    );
      return {
         headers: filteredHeaders,
         rows: filteredRows,
