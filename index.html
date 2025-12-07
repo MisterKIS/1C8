@@ -31,7 +31,17 @@
                 html += `<th>${column}</th>`;
             });
             html += '</tr>';
-        html += '</table>';
+        
+
+        html += '<tbody>';
+        result.rows.forEach(row => {
+          html += '<tr>';
+          row.forEach(cell => {
+            html += `<td>${cell || ''}</td>`;
+        });
+        html += '</tr>';
+        });
+        html += '</tbody></table>';
             container.innerHTML = html;
 };
      
