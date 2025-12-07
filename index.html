@@ -5,7 +5,7 @@
   </head>
   <body>
     <!-- Кнопка для загрузки -->
-    <button onclick="loadData()">Загрузить данные</button>
+    <button onclick="loadData()">Загрузить паритет</button>
     <div id="data"></div>
     <script>
       
@@ -15,17 +15,19 @@
 
       const response = await fetch(scriptUrl);
         const data = await response.json();  // Парсим JSON
-        
+        const headers = data.values[0];
+        let index = headers.indexOf("Паритет");
+        const columnData = data.values.map(row => row[index]);
         console.log('Полные данные:', data);
         //console.log('Значения:', data.values);
         // Создаем таблицу
             let html = '<table>';
             
             // Добавляем заголовки (первая строка)
-            const headers = data.values[0];
+            
             html += '<tr>';
-            headers.forEach(header => {
-                html += `<th>${header}</th>`;
+            columnData.forEach(column => {
+                html += `<th>${column}</th>`;
             });
             html += '</tr>';
         html += '</table>';
