@@ -14,10 +14,10 @@
         const data = await response.json();  // Парсим JSON
         
         console.log('Полные данные:', data);
-        console.log('Значения:', data.values);
+        //console.log('Значения:', data.values);
       // Используем данные из первого запроса
         document.getElementById('data').innerHTML = 
-            JSON.stringify(data, null, 2);
+            JSON.stringify(data.values, null, 2);
 };
      
       // Вызываем когда страница загрузится
