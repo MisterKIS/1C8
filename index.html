@@ -5,9 +5,16 @@
   </head>
   <body>
     <div id="data"></div>
+    <div>тест</div>
     <script>
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbxz8mczromb-Fa6Iq2jK9Ezm2tUYsDR2waJaUdelnturU0JNCTh4p4F_T1KPgKuvo9v/exec';
 
+      const response = await fetch(scriptUrl);
+        const data = await response.json();  // Парсим JSON
+        
+        console.log('Полные данные:', data);
+        console.log('Значения:', data.values);
+      
      // Получаем данные
         fetch(scriptUrl)
             .then(response => response.json())
