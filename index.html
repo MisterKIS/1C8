@@ -64,7 +64,7 @@ const filteredLastRow = columnIndices.map(index => lastRow[index]);
      return {
         headers: filteredHeaders,
         rows: [filteredLastRow],
-        fullData: [filteredHeaders, ...filteredRows]
+        fullData: [filteredHeaders, filteredLastRow]
     };
    }
     </script>
