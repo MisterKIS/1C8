@@ -48,7 +48,7 @@
    function getColumn(data, colname) {
      const headers = data.values[0];
     const rows = data.values[data.values.length - 1];
-console.log(rows);
+console.log('данные:',rows);
       const columnIndices = colname.map(name => 
         headers.indexOf(name)
     ).filter(index => index !== -1); // Убираем не найденные
