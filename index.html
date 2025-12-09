@@ -57,12 +57,12 @@ console.log('данные:',rows);
         columnIndices.includes(index)
     );
 
-     const filteredRows = rows.map(row =>
-        columnIndices.map(index => row[index])
-    );
+     // Получаем только последнюю строку и фильтруем её
+const lastRow = rows[lastRowIndex];
+const filteredLastRow = columnIndices.map(index => lastRow[index]);
      return {
         headers: filteredHeaders,
-        rows: filteredRows,
+        rows: [filteredLastRow],
         fullData: [filteredHeaders, ...filteredRows]
     };
    }
