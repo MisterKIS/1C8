@@ -47,6 +47,7 @@
      
    function getColumn(data, colname) {
      const headers = data.values[0];
+     const rows = data.values;
     const lastRowIndex = rows.length - 1;
 //console.log('данные:',rows);
       const columnIndices = colname.map(name => 
