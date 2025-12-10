@@ -96,7 +96,7 @@ button:active {
 }
       
 function displayData(rows) {
-    const hasHeader = rows.length > 1;
+    const hasHeader = rows[0];
     const lastFiveRows = rows.slice(-5);
   const container = document.getElementById('data');
   
