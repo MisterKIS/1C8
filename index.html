@@ -5,21 +5,29 @@
   </head>
   <body>
     <!-- Кнопка для загрузки -->
-    <button onclick="loadData()">Загрузить паритет</button>
+    <button onclick="loadData('oll')">Загрузить остатки</button>
+    <button onclick="loadData('balance')">Загрузить расходы</button>
     <div id="data"></div>
     <script>
       
-      async function loadData() {
+      async function loadData(sheetName = 'oll') {
         const container = document.getElementById('data');
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbxz8mczromb-Fa6Iq2jK9Ezm2tUYsDR2waJaUdelnturU0JNCTh4p4F_T1KPgKuvo9v/exec';
-
-      const response = await fetch(scriptUrl);
+  // Добавляем параметр sheet в URL
+  const urlWithParams = `${scriptUrl}?sheet=${encodeURIComponent(sheetName)}`;
+        
+      const response = await fetch(urlWithParams);
         const data = await response.json();  // Парсим JSON
-       // const headers = data.values[0];
-        //let index = headers.indexOf("Паритет");
-        //const columnData = data.values.map(row => row[index]);
-        console.log('Полные данные:', data);
+    
+        console.log('Данные из листа', sheetName, ':', data);
         //console.log('Значения:', data.values);
+        if (sheetName === 'balance') {
+        // Получаем последние 5 строк
+  const result = getLastFiveRows(data);
+          // Отображаем данные
+  displayData(lastFiveRows);
+          return;
+        }
         const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
         // Создаем таблицу
             let html = '<table>';
@@ -43,7 +51,47 @@
         });
         html += '</tbody></table>';
             container.innerHTML = html;
-};
+}
+function displayData(rows) {
+  const container = document.getElementById('data');
+  
+  if (rows.length === 0) {
+    container.innerHTML = '<p>Нет данных для отображения</p>';
+    return;
+  }
+  
+  // Создаем таблицу
+  let html = '<table border="1" style="border-collapse: collapse; width: 100%;">';
+  
+  // Заголовок таблицы (первая строка массива)
+  html += '<thead><tr>';
+  rows[0].forEach(cell => {
+    html += `<th style="padding: 8px; background: #f2f2f2;">${cell}</th>`;
+  });
+  html += '</tr></thead>';
+  
+  // Тело таблицы (последние 5 строк, начиная со второй)
+  html += '<tbody>';
+  rows.slice(1, 6).forEach(row => { // slice(1, 6) берет строки с 1 по 5 индекс
+    html += '<tr>';
+    row.forEach(cell => {
+      html += `<td style="padding: 8px;">${cell || ''}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  
+  container.innerHTML = html;
+}
+      function getLastFiveRows(data) {
+  // Проверяем структуру данных Google Sheets API
+  if (data.values && Array.isArray(data.values)) {
+    // data.values - это массив строк
+    return data.values.slice(-5);
+  } else if (Array.isArray(data)) {
+    // Если данные пришли как простой массив
+    return data.slice(-5);
+  }
      
    function getColumn(data, colname) {
      const headers = data.values[0];
