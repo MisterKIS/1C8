@@ -11,6 +11,9 @@
             margin: 0 auto;
             padding: 20px;
         }
+     .buttons {
+    margin: 20px 0;        /* Внешние отступы: 20px сверху и снизу, 0 слева и справа */
+}
      button {
     margin: 5px;           /* Отступ 5px со всех сторон у каждой кнопки */
     padding: 10px 20px;    /* Внутренние отступы: 10px сверху/снизу, 20px слева/справа */
@@ -30,8 +33,10 @@
   </head>
   <body>
     <!-- Кнопка для загрузки -->
+      <div class="buttons">
     <button onclick="loadData('oll')">Загрузить остатки</button>
     <button onclick="loadData('balance')">Загрузить расходы</button>
+      </div>
     <div id="data"></div>
     <script>
       
