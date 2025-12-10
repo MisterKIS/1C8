@@ -56,14 +56,14 @@ button:active {
         
       const response = await fetch(urlWithParams);
         const data = await response.json();  // Парсим JSON
-     const hasHeader = rows.length > 1;
+     
           
         console.log('Данные из листа', sheetName, ':', data);
         //console.log('Значения:', data.values);
         if (sheetName === 'balance') {
             
         // Получаем последние 5 строк
-  const lastFiveRows = data.values.slice(-5);
+  const lastFiveRows = data.values;
           // Отображаем данные
   displayData(lastFiveRows);
           return;
@@ -73,15 +73,7 @@ button:active {
         displayData(result.rows);
         return;
           
-            let html = '<table>';
-            // Добавляем заголовок если он есть
-      if (headerRow) {
-        html += '<thead><tr>';
-        headerRow.forEach(cell => {
-          html += `<th style="padding: 8px; background: #f2f2f2;">${cell}</th>`;
-        });
-        html += '</tr></thead>';
-      }
+            
             // Добавляем заголовки (первая строка)
             
             html += '<tr>';
@@ -104,26 +96,29 @@ button:active {
 }
       
 function displayData(rows) {
+    const hasHeader = rows.length > 1;
+    const lastFiveRows = rows.slice(-5);
   const container = document.getElementById('data');
   
   if (rows.length === 0) {
     container.innerHTML = '<p>Нет данных для отображения</p>';
     return;
   }
-  
-  // Создаем таблицу
+// Создаем таблицу
   let html = '<table border="1" style="border-collapse: collapse; width: 100%;">';
+            // Добавляем заголовок если он есть
+      if (hasHeader) {
+        html += '<thead><tr>';
+        headerRow.forEach(cell => {
+          html += `<th style="padding: 8px; background: #f2f2f2;">${cell}</th>`;
+        });
+        html += '</tr></thead>';
+      }
   
-  // Заголовок таблицы (первая строка массива)
-  html += '<thead><tr>';
-  rows[0].forEach(cell => {
-    html += `<th style="padding: 8px; background: #f2f2f2;">${cell}</th>`;
-  });
-  html += '</tr></thead>';
   
-  // Тело таблицы (последние 5 строк, начиная со второй)
+  // Добавляем последние 5 строк
   html += '<tbody>';
-  rows.slice(1, 6).forEach(row => { // slice(1, 6) берет строки с 1 по 5 индекс
+  lastFiveRows.forEach(row => {
     html += '<tr>';
     row.forEach(cell => {
       html += `<td style="padding: 8px;">${cell || ''}</td>`;
