@@ -23,13 +23,15 @@
         //console.log('Значения:', data.values);
         if (sheetName === 'balance') {
         // Получаем последние 5 строк
-  const lastFiveRows = getLastFiveRows(data);
+  const lastFiveRows = data.slice(-5);
           // Отображаем данные
   displayData(lastFiveRows);
           return;
         }
         const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
         // Создаем таблицу
+        displayData(result);
+        return;
             let html = '<table>';
             
             // Добавляем заголовки (первая строка)
@@ -93,9 +95,7 @@ function displayData(rows) {
     // Если данные пришли как простой массив
     return data.slice(-5);
   }
-     // Если структура неизвестна, пытаемся найти массив
-  console.warn('Неизвестная структура данных:', data);
-  return [];
+
 }   
      
    function getColumn(data, colname) {
