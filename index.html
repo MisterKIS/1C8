@@ -23,7 +23,7 @@
         //console.log('Значения:', data.values);
         if (sheetName === 'balance') {
         // Получаем последние 5 строк
-  const result = getLastFiveRows(data);
+  const lastFiveRows = getLastFiveRows(data);
           // Отображаем данные
   displayData(lastFiveRows);
           return;
