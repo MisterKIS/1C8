@@ -109,7 +109,7 @@ function displayData(rows) {
             // Добавляем заголовок если он есть
       if (hasHeader) {
         html += '<thead><tr>';
-        headerRow.forEach(cell => {
+        hasHeader.forEach(cell => {
           html += `<th style="padding: 8px; background: #f2f2f2;">${cell}</th>`;
         });
         html += '</tr></thead>';
