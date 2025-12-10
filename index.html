@@ -52,6 +52,7 @@
         html += '</tbody></table>';
             container.innerHTML = html;
 }
+      
 function displayData(rows) {
   const container = document.getElementById('data');
   
@@ -92,6 +93,10 @@ function displayData(rows) {
     // Если данные пришли как простой массив
     return data.slice(-5);
   }
+     // Если структура неизвестна, пытаемся найти массив
+  console.warn('Неизвестная структура данных:', data);
+  return [];
+}   
      
    function getColumn(data, colname) {
      const headers = data.values[0];
