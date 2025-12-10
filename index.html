@@ -23,14 +23,14 @@
         //console.log('Значения:', data.values);
         if (sheetName === 'balance') {
         // Получаем последние 5 строк
-  const lastFiveRows = data.slice(-5);
+  const lastFiveRows = data.values.slice(-5);
           // Отображаем данные
   displayData(lastFiveRows);
           return;
         }
         const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
         // Создаем таблицу
-        displayData(result);
+        displayData(result.rows);
         return;
             let html = '<table>';
             
