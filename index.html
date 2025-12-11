@@ -75,7 +75,9 @@ button:active {
       
 function displayData(rows) {
     const hasHeader = rows[0];
-    const lastFiveRows = rows.slice(-5);
+    console.log('hasHeander - ', hasHeander);
+    console.log('rows - ', rows);
+    if const lastFiveRows = rows.slice(-5);
   const container = document.getElementById('data');
   
   if (rows.length === 0) {
@@ -120,7 +122,7 @@ function displayData(rows) {
     ).filter(index => index !== -1);
     
     // Получаем значения из заголовков и последней строки
-    const result = columnIndices.flatMap(index => [
+    const result = columnIndices.map(index => [
         headers[index],                    // заголовок
         rows[lastRowIndex][index]         // значение из последней строки
     ]);
