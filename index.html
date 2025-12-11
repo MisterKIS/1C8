@@ -53,7 +53,7 @@ button:active {
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbxz8mczromb-Fa6Iq2jK9Ezm2tUYsDR2waJaUdelnturU0JNCTh4p4F_T1KPgKuvo9v/exec';
   // Добавляем параметр sheet в URL
   const urlWithParams = `${scriptUrl}?sheet=${encodeURIComponent(sheetName)}`;
-        
+   try {     
       const response = await fetch(urlWithParams);
         const data = await response.json();  // Парсим JSON
      
@@ -67,23 +67,30 @@ button:active {
           // Отображаем данные
   displayData(lastFiveRows);
           return;
-        }
-        const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
+        } else {
+             const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
+            const formattedData = [result.map(item => item[0]), result.map(item => item[1])];
+       
         // Создаем таблицу
-        displayData(result);
-}
+        displayData(formattedData, false);
+        }
+} catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                container.innerHTML = '<p style="color: red;">Ошибка загрузки данных</p>';
+            }
+        }
       
-function displayData(rows) {
+function displayData(rows, includeHeader = false) {
+    const container = document.getElementById('data');
+    if (!rows || rows.length === 0) {
+                container.innerHTML = '<p>Нет данных для отображения</p>';
+                return;
+            }
     const hasHeader = rows[0];
     console.log('hasHeader - ', hasHeader);
     console.log('rows - ', rows);
     if const lastFiveRows = rows.slice(-5);
-  const container = document.getElementById('data');
   
-  if (rows.length === 0) {
-    container.innerHTML = '<p>Нет данных для отображения</p>';
-    return;
-  }
 // Создаем таблицу
   let html = '<table border="1" style="border-collapse: collapse; width: 100%;">';
             // Добавляем заголовок если он есть
