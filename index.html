@@ -134,7 +134,7 @@ function displayData(rows) {
 
      // Получаем только последнюю строку и фильтруем её
 const lastRow = rows[lastRowIndex];
-const filteredLastRow = columnIndices.map(index => rows[index]);
+const filteredLastRow = columnIndices.map(index => lastRowIndex[index]);
      return {
         headers: filteredHeaders,
         rows: [filteredLastRow],
