@@ -71,28 +71,6 @@ button:active {
         const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
         // Создаем таблицу
         displayData(result.fullData);
-        return;
-          
-            
-            // Добавляем заголовки (первая строка)
-            
-            html += '<tr>';
-            result.headers.forEach(column => {
-                html += `<th>${column}</th>`;
-            });
-            html += '</tr>';
-        
-
-        html += '<tbody>';
-        result.rows.forEach(row => {
-          html += '<tr>';
-          row.forEach(cell => {
-            html += `<td>${cell || ''}</td>`;
-        });
-        html += '</tr>';
-        });
-        html += '</tbody></table>';
-            container.innerHTML = html;
 }
       
 function displayData(rows) {
@@ -156,7 +134,7 @@ function displayData(rows) {
 
      // Получаем только последнюю строку и фильтруем её
 const lastRow = rows[lastRowIndex];
-const filteredLastRow = columnIndices.map(index => lastRow[index]);
+const filteredLastRow = columnIndices.map(index => rows[index]);
      return {
         headers: filteredHeaders,
         rows: [filteredLastRow],
