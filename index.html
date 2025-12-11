@@ -70,7 +70,7 @@ button:active {
         }
         const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
         // Создаем таблицу
-        displayData(result.fullData);
+        displayData(result);
 }
       
 function displayData(rows) {
@@ -121,25 +121,21 @@ function displayData(rows) {
      
    function getColumn(data, colname) {
      const headers = data.values[0];
-     const rows = data.values;
+    const rows = data.values;
     const lastRowIndex = rows.length - 1;
-//console.log('данные:',rows);
-      const columnIndices = colname.map(name => 
+    
+    // Находим индексы запрошенных колонок
+    const columnIndices = colname.map(name => 
         headers.indexOf(name)
-    ).filter(index => index !== -1); // Убираем не найденные
-
-     const filteredHeaders = headers.filter((_, index) => 
-        columnIndices.includes(index)
-    );
-
-     // Получаем только последнюю строку и фильтруем её
-const lastRow = rows[lastRowIndex];
-const filteredLastRow = columnIndices.map(index => lastRowIndex[index]);
-     return {
-        headers: filteredHeaders,
-        rows: [filteredLastRow],
-        fullData: [filteredHeaders, filteredLastRow]
-    };
+    ).filter(index => index !== -1);
+    
+    // Получаем значения из заголовков и последней строки
+    const result = columnIndices.flatMap(index => [
+        headers[index],                    // заголовок
+        rows[lastRowIndex][index]         // значение из последней строки
+    ]);
+    
+    return result;
    }
     </script>
   </body>
