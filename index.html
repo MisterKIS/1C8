@@ -107,17 +107,7 @@ function displayData(rows) {
   
   container.innerHTML = html;
 }
-      function getLastFiveRows(data) {
-  // Проверяем структуру данных Google Sheets API
-  if (data.values && Array.isArray(data.values)) {
-    // data.values - это массив строк
-    return data.values.slice(-5);
-  } else if (Array.isArray(data)) {
-    // Если данные пришли как простой массив
-    return data.slice(-5);
-  }
-
-}   
+   
      
    function getColumn(data, colname) {
      const headers = data.values[0];
