@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Данные из Google Sheets</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <style>
-        body {
+                body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
+            margin: 20px;
+        }
+        .chart-container {
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            height: 500px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        select {
+            padding: 8px;
+            margin: 5px;
         }
      .buttons {
     margin: 20px 0;        /* Внешние отступы: 20px сверху и снизу, 0 слева и справа */
@@ -44,8 +55,25 @@ button:active {
       <div class="buttons">
     <button onclick="loadData('oll')">Загрузить остатки</button>
     <button onclick="loadData('balance')">Загрузить расходы</button>
+    <button onclick="loadData('exp')">Сводные данные</button>
       </div>
     <div id="data"></div>
+    <h2>Динамика данных по месяцам</h2>
+    <div class="controls">
+        <label>Тип диаграммы:</label>
+        <select id="chartType">
+            <option value="line">Линейный график</option>
+            <option value="bar">Столбчатая</option>
+        </select>
+        <button onclick="toggleLegend()">Показать/скрыть легенду</button>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    <div id="dataInfo"></div>
+    <div id="headers-container"></div>
     <script>
       
       async function loadData(sheetName = 'oll') {
@@ -67,7 +95,10 @@ button:active {
           // Отображаем данные
   displayData(lastFiveRows);
           return;
-        } else {
+        } 
+	else if(sheetName === 'exp'){
+	displeyHeaders(data);
+	} else {
              const result = getColumn(data, ["Паритет", "Альфа", "Наличные"]);
             const formattedData = [result.map(item => item[0]), result.map(item => item[1])];
        
@@ -79,7 +110,64 @@ button:active {
                 container.innerHTML = '<p style="color: red;">Ошибка загрузки данных</p>';
             }
         }
-      
+
+      function displeyHeaders(data) {
+	const container = document.getElementById('headers-container');
+	// проверяем, есть ли данные и массив values
+	if (!data || !data.values || data.values.length === 0) {
+                container.innerHTML = '<p>Нет данных для отображения</p>';
+                return;
+            }
+	// получаем первую строку как заголовки
+	const headers = data.values[0];
+	let startCol = 7;
+	let endCol = 17;
+    	const result = {
+        	headers: [],
+        	rows: []
+    	};
+	result.headers = headers.slice(startCol - 1, endCol);
+	    // Получаем данные для каждой строки
+    for (let i = 1; i < data.values.length; i++) {
+        const row = data.values[i];
+        const rowData = [];
+	let hasAnyData = false;
+        
+        for (let j = startCol - 1; j < endCol; j++) {
+            const value = j < row.length ? row[j] : '';
+	    rowData.push(value);
+		// Проверяем, есть ли хоть какие-то данные
+        if (value && value.toString().trim() !== '') {
+            hasAnyData = true;
+        }
+           }
+        // Если в строке нет данных - прекращаем
+    if (!hasAnyData) {
+        break;
+    }
+        result.rows.push(rowData);
+	}
+	/*console.log(result.rows);
+	// создаём html для отображения заголовков
+	let html = '<h3>Заголовки:</h3>';
+	html +=`<ul>`;
+
+	result.headers.forEach(header => {
+                // Пропускаем пустые ячейки
+                if (header !== '') {
+                    html += `<li>${header}</li>`;
+                }
+            });
+            
+            html += `</ul>`;
+    	    html += `<p>Всего строк: ${result.rows.length}</p>`;
+    	    html += `<pre>${JSON.stringify(result.rows, null, 2)}</pre>`;
+            // Отображаем результат
+            container.innerHTML = html;*/
+		createChart(result);
+
+}
+
 function displayData(rows, includeHeader = false) {
     const container = document.getElementById('data');
     if (!rows || rows.length === 0) {
@@ -136,6 +224,53 @@ function displayData(rows, includeHeader = false) {
     
     return result;
    }
+
+	// Самый простой вариант - минимум кода
+// Функция создания графика
+        function createChart(result) {
+    const ctx = document.getElementById('myChart').getContext('2d');
+	
+	// УДАЛИТЬ СТАРЫЙ ГРАФИК если он уже существует
+    const existingChart = Chart.getChart('myChart');
+    if (existingChart) {
+        existingChart.destroy();
+    }
+    
+    // Подготавливаем данные
+	const labels = result.rows.map(row => row[0]); // месяцы
+	const datasets = [];
+
+	// Проходим по всем столбцам кроме первого
+	for (let i = 1; i < result.headers.length; i++) {
+	  const data = result.rows.map(row => parseFloat(row[i]) || 0);
+        
+        datasets.push({
+            label: result.headers[i],
+            data: data,
+            borderColor: `hsl(${i * 40}, 70%, 50%)`,
+            tension: 0.1,
+	    pointRadius: 4, // Размер точек на линии
+            pointHoverRadius: 6, // Размер точек при наведении
+        });
+    }
+	
+	// Создаем диаграмму
+	new Chart(ctx, {
+        type: 'line',  // Тип графика: 'line', 'bar', 'pie' и т.д.
+        data: {
+            labels: labels,  // Метки по оси X
+            datasets: datasets  // Наборы данных (линии)
+        },
+        options: {
+            responsive: true, // Адаптивность под размер контейнера
+            plugins: {
+                legend: {
+                    position: 'top'  // Положение легенды: 'top', 'bottom', 'left', 'right'
+                }
+            }
+        }
+    });
+}
     </script>
   </body>
 </html>
