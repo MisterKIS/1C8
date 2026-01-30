@@ -229,47 +229,164 @@ function displayData(rows, includeHeader = false) {
 // Функция создания графика
         function createChart(result) {
     const ctx = document.getElementById('myChart').getContext('2d');
-	
-	// УДАЛИТЬ СТАРЫЙ ГРАФИК если он уже существует
+    
+    // Удалить старый график
     const existingChart = Chart.getChart('myChart');
     if (existingChart) {
         existingChart.destroy();
     }
     
     // Подготавливаем данные
-	const labels = result.rows.map(row => row[0]); // месяцы
-	const datasets = [];
+    const labels = result.rows.map(row => row[0]);
+    const datasets = [];
+    const colors = []; // Сохраняем цвета для кнопок
 
-	// Проходим по всем столбцам кроме первого
-	for (let i = 1; i < result.headers.length; i++) {
-	  const data = result.rows.map(row => parseFloat(row[i]) || 0);
+    // Проходим по всем столбцам кроме первого
+    for (let i = 1; i < result.headers.length; i++) {
+        const data = result.rows.map(row => parseFloat(row[i]) || 0);
+        const color = `hsl(${i * 40}, 70%, 50%)`;
+        colors.push(color);
         
         datasets.push({
             label: result.headers[i],
             data: data,
-            borderColor: `hsl(${i * 40}, 70%, 50%)`,
+            borderColor: color,
+            backgroundColor: color + '20', // Добавляем прозрачность
+            borderWidth: 2,
             tension: 0.1,
-	    pointRadius: 4, // Размер точек на линии
-            pointHoverRadius: 6, // Размер точек при наведении
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: color,
+            hidden: false // По умолчанию все линии видны
         });
     }
-	
-	// Создаем диаграмму
-	new Chart(ctx, {
-        type: 'line',  // Тип графика: 'line', 'bar', 'pie' и т.д.
+    
+    // Создаем диаграмму
+    const chart = new Chart(ctx, {
+        type: 'line',
         data: {
-            labels: labels,  // Метки по оси X
-            datasets: datasets  // Наборы данных (линии)
+            labels: labels,
+            datasets: datasets
         },
         options: {
-            responsive: true, // Адаптивность под размер контейнера
+            responsive: true,
             plugins: {
                 legend: {
-                    position: 'top'  // Положение легенды: 'top', 'bottom', 'left', 'right'
+                    position: 'top',
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15,
+                        font: {
+                            size: 11
+                        },
+                        // Клик по элементу легенды скрывает/показывает линию
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.datasetIndex;
+                            const ci = legend.chart;
+                            const meta = ci.getDatasetMeta(index);
+                            
+                            meta.hidden = meta.hidden === null ? 
+                                !ci.data.datasets[index].hidden : null;
+                            
+                            ci.update();
+                        }
+                    }
                 }
             }
         }
     });
+    
+    // Создаем панель управления линиями
+    createLineControls(chart, datasets, colors);
+    
+    return chart;
+}
+
+// Функция для создания кнопок управления линиями
+function createLineControls(chart, datasets, colors) {
+    const controlsDiv = document.getElementById('lineControls') || 
+                       (() => {
+                           const div = document.createElement('div');
+                           div.id = 'lineControls';
+                           div.style.margin = '20px 0';
+                           document.querySelector('.chart-container').after(div);
+                           return div;
+                       })();
+    
+    controlsDiv.innerHTML = `
+        <h4>Управление линиями:</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            ${datasets.map((dataset, index) => `
+                <button onclick="toggleLine(${index})" 
+                        style="background: ${colors[index]}; 
+                               color: white; 
+                               border: none; 
+                               padding: 5px 10px;
+                               border-radius: 3px;
+                               cursor: pointer;">
+                    ${dataset.label}
+                </button>
+            `).join('')}
+        </div>
+        <div>
+            <button onclick="showAllLines()" style="margin-right: 10px;">
+                Показать все
+            </button>
+            <button onclick="hideAllLines()">
+                Скрыть все
+            </button>
+            <button onclick="toggleLegend()" style="margin-left: 10px;">
+                Показать/скрыть легенду
+            </button>
+        </div>
+    `;
+    
+    // Добавляем функции в глобальную область видимости
+    window.toggleLine = function(index) {
+        const dataset = chart.data.datasets[index];
+        const meta = chart.getDatasetMeta(index);
+        
+        // Инвертируем видимость
+        meta.hidden = !meta.hidden;
+        
+        // Обновляем цвет кнопки
+        const button = controlsDiv.querySelectorAll('button')[index];
+        button.style.opacity = meta.hidden ? '0.5' : '1';
+        
+        chart.update();
+    };
+    
+    window.showAllLines = function() {
+        chart.data.datasets.forEach((dataset, index) => {
+            const meta = chart.getDatasetMeta(index);
+            meta.hidden = false;
+        });
+        chart.update();
+        
+        // Обновляем кнопки
+        controlsDiv.querySelectorAll('button').forEach((btn, i) => {
+            if (i < datasets.length) btn.style.opacity = '1';
+        });
+    };
+    
+    window.hideAllLines = function() {
+        chart.data.datasets.forEach((dataset, index) => {
+            const meta = chart.getDatasetMeta(index);
+            meta.hidden = true;
+        });
+        chart.update();
+        
+        // Обновляем кнопки
+        controlsDiv.querySelectorAll('button').forEach((btn, i) => {
+            if (i < datasets.length) btn.style.opacity = '0.5';
+        });
+    };
+    
+    window.toggleLegend = function() {
+        chart.options.plugins.legend.display = 
+            !chart.options.plugins.legend.display;
+        chart.update();
+    };
 }
     </script>
   </body>
